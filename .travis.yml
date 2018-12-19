@@ -12,6 +12,7 @@ install:
   - git clone git://github.com/JetBrains/Arend && cd Arend
   - ./gradlew
   - ./gradlew jarDep
+  - cd ..
 
 script:
-  - java -jar ./build/libs/arend.jar -s src
+  - java -jar ./Arend/build/libs/arend.jar -s src
