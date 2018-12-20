@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/groupoid/hcomp.svg?branch=master)](https://travis-ci.org/groupoid/hcomp)
+
 Groupoid Infinity for Arend
 ===========================
 
