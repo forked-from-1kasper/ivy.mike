@@ -1,11 +1,21 @@
 
 \import Connection
 
-\func trans (A B : \Type) (p : A = B) (a : A) : B
-   => coe (\lam i => p @ i) a right
+\func coercion (i k : I) (A : I -> \Type) : A i -> A k
+   => coe (\lam i => A i -> A k) (\lam x => coe A x k) i
+
+\func trans {A B : \Type} (p : A = B) : A -> B
+   => coercion left right (@ p)
+
+\func transNeg {A B : \Type} (p : A = B) : B -> A
+   => coercion right left (@ p)
+
+\func transK {A B : \Type} (p : A = B) (x : A) : x = transNeg p (trans p x)
+   => path (\lam i => coercion i left (@ p)
+                     (coercion left i (@ p) x))
 
 \func coerce (A B : \Type) (p : A = B) : A -> B
-   => trans A B p
+   => trans p
 
 \func transport {A : \Type} (B : A -> \Type) {a x : A} (p : a = x) (b : B a) : B x
    => coe (\lam i => B (p @ i)) b right
@@ -17,7 +27,7 @@
    => a = b
 
 \func HPath (A B : \Type) (a : A) (b : B) (P : A = B) : \Type
-   => (trans A B P a) = b
+   => trans P a = b
 
 \func refl (A : \Type) (a : A) : Path A a a
    => path (\lam i => a)
@@ -26,15 +36,18 @@
    => \Sigma (x : A) (a = x)
 
 \func theta (A : \Type) (a : A) : singl A a
-   => (a,refl A a)
+   => (a, refl A a)
 
 \func inv (A : \Type) (a b : A) (p : a = b) : b = a
    => transport (\lam x => x = a) p (path (\lam _ => a))
 
+\func composition {A : \Type} {a b c : A} (p : a = b) (q : b = c) : a = c
+   => coercion right left (\lam i => p @ i = c) q
+
 \func cong (A B : \Type) (f : A -> B) (a b : A) (p : Path A a b) : Path B (f a) (f b)
    => path (\lam i => f (p @ i))
 
-\func contr (A : \Type) (a b : A) (p : Path A a b) : Path (singl A a) (theta A a) (b,p)
+\func contr (A : \Type) (a b : A) (p : Path A a b) : Path (singl A a) (theta A a) (b, p)
    => path (\lam i => (p @ i, path (\lam j => p @ meet i j)))
 
 \func D (A : \Type) : \Type => \Pi (x y : A) -> Path A x y -> \Type
@@ -42,7 +55,7 @@
 \func J (A : \Type) (a : A) (C : \Pi (x : A) -> a = x -> \Type)
         (d : C a (refl A a)) (x : A) (p : a = x) : C x p
 -- => coe (\lam i => C (p @ i) (connAnd p i)) d right -- normal form
-   => subst (singl A a) (\lam x => C x.1 x.2) (theta A a) (x,p) (contr A a x p) d
+   => subst (singl A a) (\lam x => C x.1 x.2) (theta A a) (x, p) (contr A a x p) d
 
 \data N | Z | S (n : N)
 
@@ -56,4 +69,3 @@
 \func isGroupoid  (A : \Type) : \Type => n-groupoid A (S (S Z))
 \func isGrp2      (A : \Type) : \Type => n-groupoid A (S (S (S Z)))
 \func isGrp3      (A : \Type) : \Type => n-groupoid A (S (S (S (S Z))))
-
