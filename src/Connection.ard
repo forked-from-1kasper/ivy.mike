@@ -18,4 +18,3 @@
 
 \func connOr {A : \Type} {a b : A} (p : a = b) (i : I) : p @ i = b
    => path (\lam j => p @ join i j)
-

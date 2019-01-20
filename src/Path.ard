@@ -10,6 +10,14 @@
 \func rfl {A : \Type} {a : A} : a = a
    => path (\lam i => a)
 
+\func HConnAnd {A : \Type} {a b : A} (p : a = b) :
+   Path (\lam i => a = p @ i) rfl p
+   => path (connAnd p)
+
+\func HConnOr {A : \Type} {a b : A} (p : a = b) :
+   Path (\lam i => p @ i = b) p rfl
+   => path (connOr p)
+
 \func trans {A B : \Type} (p : A = B) : A -> B
    => coercion left right (@ p)
 
@@ -58,6 +66,18 @@
    (left : a = c) (right : b = d) : c = d
    => inv left # bottom # right
 
+{-       u
+    a ------> b
+    |         |
+  p |         | q
+    |         |
+    V         V
+    c ------> d
+         v       -}
+\func Square {A : \Type} {a b c d : A}
+   (u : a = b) (v : c = d) (p : a = c) (q : b = d)
+   => Path (\lam i => u @ i = v @ i) p q
+
 -- Groupoid Interpretation
 
 \func refl-left {A : \Type} {a b : A} (p : a = b) : rfl # p = p
@@ -97,19 +117,17 @@
 \func inv-J {A : \Type} {a b : A} (p : a = b) : b = a
    => J (\lam x _ => x = a) rfl p
 
-\data N | zero | S (n : N)
-
-\func n-groupoid (A : \Type) (n : N) : \Type => \Pi (a b : A) -> rec a b n
-   \where \func rec {A : \Type} (a b : A) (k : N) : \Type
-   \elim k { | zero => a = b | S n => n-groupoid (a = b) n }
+\func n-groupoid (A : \Type) (n : Nat) : \Type => \Pi (a b : A) -> rec a b n
+   \where \func rec {A : \Type} (a b : A) (k : Nat) : \Type
+   \elim k { | zero => a = b | suc n => n-groupoid (a = b) n }
 
 \func isContr     (A : \Type) : \Type => \Sigma (x : A) (\Pi (y : A) -> x = y)
-\func isProp      (A : \Type) : \Type => n-groupoid A zero
-\func isSet       (A : \Type) : \Type => n-groupoid A (S zero)
-\func isGroupoid  (A : \Type) : \Type => n-groupoid A (S (S zero))
-\func isGrp2      (A : \Type) : \Type => n-groupoid A (S (S (S zero)))
-\func isGrp3      (A : \Type) : \Type => n-groupoid A (S (S (S (S zero))))
+\func isProp      (A : \Type) : \Type => n-groupoid A 0
+\func isSet       (A : \Type) : \Type => n-groupoid A 1
+\func isGroupoid  (A : \Type) : \Type => n-groupoid A 2
+\func isGrp2      (A : \Type) : \Type => n-groupoid A 3
+\func isGrp3      (A : \Type) : \Type => n-groupoid A 4
 
-\func Prop : \Type     => \Sigma (X : \Type) (isProp X)
-\func Set : \Type      => \Sigma (X : \Type) (isSet X)
+\func Prop     : \Type => \Sigma (X : \Type) (isProp X)
+\func Set      : \Type => \Sigma (X : \Type) (isSet X)
 \func Groupoid : \Type => \Sigma (X : \Type) (isGroupoid X)
