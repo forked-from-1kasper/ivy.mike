@@ -14,34 +14,37 @@
    => path (\lam i => coercion i left (@ p)
                      (coercion left i (@ p) x))
 
-\func coerce (A B : \Type) (p : A = B) : A -> B
+\func coerce {A B : \Type} (p : A = B) : A -> B
    => trans p
 
-\func transport {A : \Type} (B : A -> \Type) {a x : A} (p : a = x) (b : B a) : B x
-   => coe (\lam i => B (p @ i)) b right
+\func transport {A : \Type} (B : A -> \Type) {a b : A} (p : a = b) (x : B a) : B b
+   => coercion left right (\lam i => B (p @ i)) x
 
-\func subst (A : \Type) (B : A -> \Type) (a x : A) (p : a = x) (b : B a) : B x
-   => coe (\lam i => B (p @ i)) b right
+\func subst (A : \Type) (B : A -> \Type) (a b : A) (p : a = b) (x : B a) : B b
+   => coercion left right (\lam i => B (p @ i)) x
 
 \func Path (A : \Type) (a b : A) : \Type
    => a = b
 
-\func HPath (A B : \Type) (a : A) (b : B) (P : A = B) : \Type
+\func HPath {A B : \Type} (a : A) (b : B) (P : A = B) : \Type
    => trans P a = b
 
-\func refl (A : \Type) (a : A) : Path A a a
+\func refl {A : \Type} (a : A) : Path A a a
+   => path (\lam i => a)
+
+\func rfl {A : \Type} {a : A} : a = a
    => path (\lam i => a)
 
 \func singl (A : \Type) (a : A) : \Type
    => \Sigma (x : A) (a = x)
 
 \func theta (A : \Type) (a : A) : singl A a
-   => (a, refl A a)
+   => (a, refl a)
 
-\func inv (A : \Type) (a b : A) (p : a = b) : b = a
-   => transport (\lam x => x = a) p (path (\lam _ => a))
+\func inv {A : \Type} {a b : A} (p : a = b) : b = a =>
+  coercion right left (\lam i => b = p @ i) rfl
 
-\func composition {A : \Type} {a b c : A} (p : a = b) (q : b = c) : a = c
+\func \infix 5 # {A : \Type} {a b c : A} (p : a = b) (q : b = c) : a = c
    => coercion right left (\lam i => p @ i = c) q
 
 \func cong (A B : \Type) (f : A -> B) (a b : A) (p : Path A a b) : Path B (f a) (f b)
@@ -50,18 +53,18 @@
 \func contr (A : \Type) (a b : A) (p : Path A a b) : Path (singl A a) (theta A a) (b, p)
    => path (\lam i => (p @ i, path (\lam j => p @ meet i j)))
 
-\func D (A : \Type) : \Type => \Pi (x y : A) -> Path A x y -> \Type
+\func D (A : \Type) : \Type => \Pi (x y : A) -> x = y -> \Type
 
 \func J (A : \Type) (a : A) (C : \Pi (x : A) -> a = x -> \Type)
-        (d : C a (refl A a)) (x : A) (p : a = x) : C x p
+        (d : C a (refl a)) (x : A) (p : a = x) : C x p
 -- => coe (\lam i => C (p @ i) (connAnd p i)) d right -- normal form
    => subst (singl A a) (\lam x => C x.1 x.2) (theta A a) (x, p) (contr A a x p) d
 
 \data N | Z | S (n : N)
 
-\func n-groupoid (A : \Type) (n : N) : \Type => \Pi (a b : A) -> rec A a b n
-   \where \func rec (A : \Type) (a b : A) (k : N) : \Type
-   \elim k { | Z => Path A a b | S n => n-groupoid (Path A a b) n }
+\func n-groupoid (A : \Type) (n : N) : \Type => \Pi (a b : A) -> rec a b n
+   \where \func rec {A : \Type} (a b : A) (k : N) : \Type
+   \elim k { | Z => a = b | S n => n-groupoid (a = b) n }
 
 \func isContr     (A : \Type) : \Type => \Sigma (x : A) (\Pi (y : A) -> Path A x y)
 \func isProp      (A : \Type) : \Type => n-groupoid A Z

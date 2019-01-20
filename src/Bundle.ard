@@ -11,5 +11,4 @@
 
 \func decode (B : \Type) (F : B -> \Type) (y : B) :
       F y -> fiber (\Sigma (x : B) (F x)) B (\lam (p : \Sigma (x : B) (F x)) => p.1) y
-   => \lam (x : F y) => ((y,x),path (\lam i => y))
-
+   => \lam (x : F y) => ((y, x), path (\lam i => y))

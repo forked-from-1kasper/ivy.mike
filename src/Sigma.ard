@@ -6,7 +6,7 @@
 
 \func dpair (A : \Type) (B : A -> \Type) (a : A) (b : B a)
     : Sigma A B
-   => (a,b)
+   => (a, b)
 
 \func pi1 (A : \Type) (B : A -> \Type) (x : Sigma A B)
     : A
@@ -21,13 +21,13 @@
       (p : Sigma A B) : C => g p.1 p.2
 
 \func beta1 (A : \Type) (B : A -> \Type) (a : A) (b : B a)
-    : Path A a (pi1 A B (a,b))
-   => refl A a
+    : Path A a (pi1 A B (a, b))
+   => rfl
 
 \func beta2 (A : \Type) (B : A -> \Type) (a : A) (b : B a)
-    : Path (B a) b (pi2 A B (a,b))
-   => refl (B a) b
+    : Path (B a) b (pi2 A B (a, b))
+   => rfl
 
 \func eta2 (A : \Type) (B : A -> \Type) (p : Sigma A B)
-    : Path (Sigma A B) p (p.1,p.2)
-   => refl (Sigma A B) p
+    : Path (Sigma A B) p (p.1, p.2)
+   => rfl

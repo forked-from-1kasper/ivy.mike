@@ -21,10 +21,10 @@
   (Sigma_Comp3 : \Pi (B : A -> \Type) (p : Sigma A B) -> p = Sigma_Intro B (pi1 A B p) (Sigma_Elim2 B p))
   (Id_Former : A -> A -> \Type)
   (Id_Intro : \Pi (a : A) -> Path A a a)
-  (Id_Elim : \Pi (a : A) (C : \Pi (x : A) -> a = x -> \Type) (d : C a (refl A a)) (x : A) (p : a = x) -> C x p)
+  (Id_Elim : \Pi (a : A) (C : \Pi (x : A) -> a = x -> \Type) (d : C a (refl a)) (x : A) (p : a = x) -> C x p)
 
 \func check (A : \Type) : MLTT
    => \new MLTT A (Pi A) (lam A) (app A) (beta A) (eta A)
                   (Sigma A) (dpair A) (pi1 A) (pi2 A) (beta1 A) (beta2 A) (eta2 A)
-                  (Path A) (refl A) (J A)
+                  (Path A) refl (J A)
 
