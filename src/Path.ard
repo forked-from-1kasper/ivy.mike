@@ -1,10 +1,10 @@
 
-\import Connection
+\import Proto \import Connection
 
 \func coercion (i k : I) (A : I -> \Type) : A i -> A k
    => coe (\lam i => A i -> A k) (\lam x => coe A x k) i
 
-\func refl {A : \Type} (a : A) : Path A a a
+\func refl {A : \Type} (a : A) : a = a
    => path (\lam i => a)
 
 \func rfl {A : \Type} {a : A} : a = a
@@ -32,9 +32,6 @@
 \func subst (A : \Type) (B : A -> \Type) (a b : A) (p : a = b) (x : B a) : B b
    => coercion left right (\lam i => B (p @ i)) x
 
-\func Path (A : \Type) (a b : A) : \Type
-   => a = b
-
 \func HPath {A B : \Type} (a : A) (b : B) (P : A = B) : \Type
    => trans P a = b
 
@@ -47,11 +44,19 @@
 \func inv {A : \Type} {a b : A} (p : a = b) : b = a
    => coercion right left (\lam i => b = p @ i) rfl
 
+\func seg : left = right => path idfun
+
+\func neg (i : I) : I \elim i
+  | left => right
+  | right => left
+  | i => inv seg @ i
+
 \func \infixl 5 # {A : \Type} {a b c : A} (p : a = b) (q : b = c) : a = c
    => coercion right left (\lam i => p @ i = c) q
 
-\func kan {A : \Type} {a b c d : A} (p : a = b) (q : a = c) (r : b = d) : c = d
-   => inv q # p # r
+\func kan {A : \Type} {a b c d : A} (bottom : a = b)
+   (left : a = c) (right : b = d) : c = d
+   => inv left # bottom # right
 
 -- Groupoid Interpretation
 
@@ -69,10 +74,10 @@
    => coercion left right (\lam i => inv (connAnd p i) # connAnd p i = rfl)
       rfl
 
-\func cong {A B : \Type} (f : A -> B) {a b : A} (p : Path A a b) : Path B (f a) (f b)
+\func cong {A B : \Type} (f : A -> B) {a b : A} (p : a = b) : f a = f b
    => path (\lam i => f (p @ i))
 
-\func contr (A : \Type) (a b : A) (p : Path A a b) : Path (singl A a) (theta A a) (b, p)
+\func contr (A : \Type) (a b : A) (p : a = b) : theta A a = (b, p)
    => path (\lam i => (p @ i, path (\lam j => p @ meet i j)))
 
 \func D (A : \Type) : \Type => \Pi (x y : A) -> x = y -> \Type
@@ -92,18 +97,18 @@
 \func inv-J {A : \Type} {a b : A} (p : a = b) : b = a
    => J (\lam x _ => x = a) rfl p
 
-\data N | Z | S (n : N)
+\data N | zero | S (n : N)
 
 \func n-groupoid (A : \Type) (n : N) : \Type => \Pi (a b : A) -> rec a b n
    \where \func rec {A : \Type} (a b : A) (k : N) : \Type
-   \elim k { | Z => a = b | S n => n-groupoid (a = b) n }
+   \elim k { | zero => a = b | S n => n-groupoid (a = b) n }
 
-\func isContr     (A : \Type) : \Type => \Sigma (x : A) (\Pi (y : A) -> Path A x y)
-\func isProp      (A : \Type) : \Type => n-groupoid A Z
-\func isSet       (A : \Type) : \Type => n-groupoid A (S Z)
-\func isGroupoid  (A : \Type) : \Type => n-groupoid A (S (S Z))
-\func isGrp2      (A : \Type) : \Type => n-groupoid A (S (S (S Z)))
-\func isGrp3      (A : \Type) : \Type => n-groupoid A (S (S (S (S Z))))
+\func isContr     (A : \Type) : \Type => \Sigma (x : A) (\Pi (y : A) -> x = y)
+\func isProp      (A : \Type) : \Type => n-groupoid A zero
+\func isSet       (A : \Type) : \Type => n-groupoid A (S zero)
+\func isGroupoid  (A : \Type) : \Type => n-groupoid A (S (S zero))
+\func isGrp2      (A : \Type) : \Type => n-groupoid A (S (S (S zero)))
+\func isGrp3      (A : \Type) : \Type => n-groupoid A (S (S (S (S zero))))
 
 \func Prop : \Type     => \Sigma (X : \Type) (isProp X)
 \func Set : \Type      => \Sigma (X : \Type) (isSet X)

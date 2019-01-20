@@ -1,0 +1,48 @@
+
+\import Proto \import Path
+
+\func Z : \Type => either N N
+
+{- +2 = inr (S (S zero))
+   +1 = inr (S zero)
+    0 = inr zero
+   -1 = inl zero
+   -2 = inl (S zero) -}
+
+\func zero-Z : Z => inr zero
+\func one-Z : Z => inr (S zero)
+
+\func suc-Z (n : Z) : Z \elim n
+   | inl u => \case u \with {
+      | zero => inr zero
+      | S n => inl n
+   }
+   | inr v => inr (S v)
+
+\func pred-Z (n : Z) : Z \elim n
+   | inl u => inl (S u)
+   | inr v => \case v \with {
+      | zero => inl zero
+      | S n => inr n
+   }
+
+\func suc-pred-inr-Z (u : N) : suc-Z (pred-Z (inr u)) = inr u \elim u
+   | zero => rfl
+   | S n => rfl
+
+\func pred-suc-inl-Z (u : N) : pred-Z (suc-Z (inl u)) = inl u \elim u
+   | zero => rfl
+   | S n => rfl
+
+\func suc-pred-Z (x : Z) : suc-Z (pred-Z x) = x \elim x
+   | inl u => rfl
+   | inr v => suc-pred-inr-Z v
+
+\func pred-suc-Z (x : Z) : pred-Z (suc-Z x) = x \elim x
+   | inl u => pred-suc-inl-Z u
+   | inr v => rfl
+
+\func suc-path-Z : Z = Z
+   => path (iso suc-Z pred-Z pred-suc-Z suc-pred-Z)
+
+\func test-one-Z : trans suc-path-Z zero-Z = inr (S zero) => rfl

@@ -1,0 +1,31 @@
+
+\import Path \import Int
+
+\data S1
+   | base
+   | loop I \with {
+       | left => base
+       | right => base
+   }
+
+\func loopS1 : base = base => path loop
+\func invLoop : base = base => path (\lam i => loop (neg i))
+
+\func triv : base = base
+   => rfl
+
+\func one-turn (x : base = base) : base = base
+   => x # loopS1
+
+\func back-turn (x : base = base) : base = base
+   => x # inv loopS1
+
+\func helix (x : S1) : \Type \elim x
+   | base => Z
+   | loop i => suc-path-Z @ i
+
+\func winding (p : base = base) : Z
+   => transport helix p zero-Z
+
+\func loopZ1 : winding loopS1 = one-Z => rfl
+\func loopZ0 : winding triv = zero-Z => rfl

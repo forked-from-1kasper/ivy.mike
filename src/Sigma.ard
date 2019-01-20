@@ -21,13 +21,13 @@
       (p : Sigma A B) : C => g p.1 p.2
 
 \func beta1 (A : \Type) (B : A -> \Type) (a : A) (b : B a)
-    : Path A a (pi1 A B (a, b))
+    : a = pi1 A B (a, b)
    => rfl
 
 \func beta2 (A : \Type) (B : A -> \Type) (a : A) (b : B a)
-    : Path (B a) b (pi2 A B (a, b))
+    : b = pi2 A B (a, b)
    => rfl
 
 \func eta2 (A : \Type) (B : A -> \Type) (p : Sigma A B)
-    : Path (Sigma A B) p (p.1, p.2)
+    : p = (p.1, p.2)
    => rfl
