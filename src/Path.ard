@@ -4,8 +4,17 @@
 \func coercion (i k : I) (A : I -> \Type) : A i -> A k
    => coe (\lam i => A i -> A k) (\lam x => coe A x k) i
 
+\func refl {A : \Type} (a : A) : Path A a a
+   => path (\lam i => a)
+
+\func rfl {A : \Type} {a : A} : a = a
+   => path (\lam i => a)
+
 \func trans {A B : \Type} (p : A = B) : A -> B
    => coercion left right (@ p)
+
+\func trans-comp {A : \Type} (a : A) : a = trans (refl A) a
+   => rfl
 
 \func transNeg {A B : \Type} (p : A = B) : B -> A
    => coercion right left (@ p)
@@ -29,25 +38,38 @@
 \func HPath {A B : \Type} (a : A) (b : B) (P : A = B) : \Type
    => trans P a = b
 
-\func refl {A : \Type} (a : A) : Path A a a
-   => path (\lam i => a)
-
-\func rfl {A : \Type} {a : A} : a = a
-   => path (\lam i => a)
-
 \func singl (A : \Type) (a : A) : \Type
    => \Sigma (x : A) (a = x)
 
 \func theta (A : \Type) (a : A) : singl A a
    => (a, refl a)
 
-\func inv {A : \Type} {a b : A} (p : a = b) : b = a =>
-  coercion right left (\lam i => b = p @ i) rfl
+\func inv {A : \Type} {a b : A} (p : a = b) : b = a
+   => coercion right left (\lam i => b = p @ i) rfl
 
-\func \infix 5 # {A : \Type} {a b c : A} (p : a = b) (q : b = c) : a = c
+\func \infixl 5 # {A : \Type} {a b c : A} (p : a = b) (q : b = c) : a = c
    => coercion right left (\lam i => p @ i = c) q
 
-\func cong (A B : \Type) (f : A -> B) (a b : A) (p : Path A a b) : Path B (f a) (f b)
+\func kan {A : \Type} {a b c d : A} (p : a = b) (q : a = c) (r : b = d) : c = d
+   => inv q # p # r
+
+-- Groupoid Interpretation
+
+\func refl-left {A : \Type} {a b : A} (p : a = b) : rfl # p = p
+   => rfl
+
+\func refl-right {A : \Type} {a b : A} (p : a = b) : p # rfl = p
+   => coercion left right (\lam i => connAnd p i # rfl = connAnd p i) rfl
+
+\func comp-path-inv {A : \Type} {a b : A} (p : a = b) : p # inv p = rfl
+   => coercion left right (\lam i => connAnd p i # inv (connAnd p i) = rfl)
+      rfl
+
+\func comp-inv-path {A : \Type} {a b : A} (p : a = b) : inv p # p = rfl
+   => coercion left right (\lam i => inv (connAnd p i) # connAnd p i = rfl)
+      rfl
+
+\func cong {A B : \Type} (f : A -> B) {a b : A} (p : Path A a b) : Path B (f a) (f b)
    => path (\lam i => f (p @ i))
 
 \func contr (A : \Type) (a b : A) (p : Path A a b) : Path (singl A a) (theta A a) (b, p)
@@ -55,10 +77,20 @@
 
 \func D (A : \Type) : \Type => \Pi (x y : A) -> x = y -> \Type
 
-\func J (A : \Type) (a : A) (C : \Pi (x : A) -> a = x -> \Type)
-        (d : C a (refl a)) (x : A) (p : a = x) : C x p
+\func J {A : \Type} {a : A} (C : \Pi (x : A) -> a = x -> \Type)
+        (d : C a (refl a)) {x : A} (p : a = x) : C x p
 -- => coe (\lam i => C (p @ i) (connAnd p i)) d right -- normal form
    => subst (singl A a) (\lam x => C x.1 x.2) (theta A a) (x, p) (contr A a x p) d
+
+\func comp-assoc {A : \Type} {a b c d : A}
+   (p : a = b) (q : b = c) (r : c = d) : p # (q # r) = (p # q) # r
+   => \let | enclose-left => refl-right (p # q)
+           | enclose-right => cong (# p) (refl-right q)
+      \in J (\lam _ r => p # (q # r) = (p # q) # r)
+            (enclose-right # inv enclose-left) r
+
+\func inv-J {A : \Type} {a b : A} (p : a = b) : b = a
+   => J (\lam x _ => x = a) rfl p
 
 \data N | Z | S (n : N)
 
@@ -72,3 +104,7 @@
 \func isGroupoid  (A : \Type) : \Type => n-groupoid A (S (S Z))
 \func isGrp2      (A : \Type) : \Type => n-groupoid A (S (S (S Z)))
 \func isGrp3      (A : \Type) : \Type => n-groupoid A (S (S (S (S Z))))
+
+\func Prop : \Type     => \Sigma (X : \Type) (isProp X)
+\func Set : \Type      => \Sigma (X : \Type) (isSet X)
+\func Groupoid : \Type => \Sigma (X : \Type) (isGroupoid X)

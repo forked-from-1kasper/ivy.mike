@@ -26,5 +26,4 @@
 \func check (A : \Type) : MLTT
    => \new MLTT A (Pi A) (lam A) (app A) (beta A) (eta A)
                   (Sigma A) (dpair A) (pi1 A) (pi2 A) (beta1 A) (beta2 A) (eta2 A)
-                  (Path A) refl (J A)
-
+                  (Path A) refl (\lam a C d x p => J C d p)
