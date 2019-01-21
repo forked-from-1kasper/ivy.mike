@@ -131,3 +131,16 @@
 \func Prop     : \Type => \Sigma (X : \Type) (isProp X)
 \func Set      : \Type => \Sigma (X : \Type) (isSet X)
 \func Groupoid : \Type => \Sigma (X : \Type) (isGroupoid X)
+
+\func homotopy {A : \Type} (C : A -> \Type) (f g : \Pi (x : A) -> C x)
+   => \Pi (x : A) -> f x = g x
+
+\func funext {A : \Type} {C : A -> \Type} (f g : \Pi (x : A) -> C x)
+   (p : homotopy C f g) : f = g
+   => path (\lam i x => (p x) @ i)
+
+\func I-ind (C : I -> \Type) {b0 : C left} {b1 : C right} (s : Path C b0 b1)
+   (i : I) : C i \elim i
+   | left => b0
+   | right => b1
+   | i => s @ i

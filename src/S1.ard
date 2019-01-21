@@ -4,8 +4,8 @@
 \data S1
    | base
    | loop I \with {
-       | left => base
-       | right => base
+      | left => base
+      | right => base
    }
 
 \func loopS1 : base = base => path loop

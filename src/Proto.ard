@@ -20,6 +20,9 @@
 \func \infixr 8 o {A B C : \Type} (g : B -> C) (f : A -> B)
    => \lam x => g (f x)
 
+\func flip {A B C : \Type} (f: A -> B -> C) (b : B) (a : A) : C
+   => f a b
+
 -- Empty type
 
 \data empty
@@ -102,4 +105,3 @@
 
 \func boolInd (A : bool -> \Type) (f : A false) (t : A true) (n : bool)
     : A n \elim n { | false => f | true => t }
-
