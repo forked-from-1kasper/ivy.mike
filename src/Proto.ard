@@ -20,7 +20,10 @@
 \func \infixr 8 o {A B C : \Type} (g : B -> C) (f : A -> B)
    => \lam x => g (f x)
 
-\func flip {A B C : \Type} (f: A -> B -> C) (b : B) (a : A) : C
+\func \infix 6 ~ {A B : \Type} (f g : A -> B) =>
+  \Pi (x : A) -> f x = g x
+
+\func flip {A B C : \Type} (f : A -> B -> C) (b : B) (a : A) : C
    => f a b
 
 -- Empty type
