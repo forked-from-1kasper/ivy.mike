@@ -1,0 +1,11 @@
+
+\import Path
+
+\func fiber {A B : \Type} (f : A -> B) (b : B)
+   => \Sigma (a : A) (f a = b)
+
+\func isEquiv {A B : \Type} (f : A -> B)
+   => \Pi (b : B) -> isContr (fiber f b)
+
+\func \infix 5 <~> (A B : \Type)
+   => \Sigma (f : A -> B) (isEquiv f)

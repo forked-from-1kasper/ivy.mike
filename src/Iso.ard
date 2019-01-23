@@ -1,0 +1,9 @@
+
+\import Proto
+
+\record Iso (A B : \Type) {
+  | forward : A -> B
+  | backward : B -> A
+  | backward-forward : backward o forward ~ idfun
+  | forward-backward : forward o backward ~ idfun
+}
