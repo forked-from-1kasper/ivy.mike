@@ -17,7 +17,7 @@
 \func isConnected (edges : Nat -> Nat -> \Type)
    => isProp (Point-space edges)
 
-\func isEulerian (edges : Nat -> Nat -> \Type) {a b : Graph edges}
+\func isEulerian (edges : Nat -> Nat -> \Type) (a b : Graph edges)
    => isContr (a = b)
 
 \func Koenigsberg-edges (n m : Nat) : \Type \elim n, m
@@ -27,3 +27,6 @@
    | 0, 2 => bool
    | 0, 3 => bool
    | _, _ => empty
+
+\func Koenigsberg-problem-statement
+   => not (isEulerian Koenigsberg-edges (node 0) (node 0))

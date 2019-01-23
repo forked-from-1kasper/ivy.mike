@@ -36,8 +36,11 @@
 \func emptyInd {C : empty -> \Type} : \Pi (z : empty) -> C z
    => \lam (x : empty) => \case x \with { }
 
+\func not (A : \Type)
+   => A -> empty
+
 \func \infix 5 =/= {A : \Type} (a b : A)
-   => (a = b) -> empty
+   => not (a = b)
 
 -- Unit type
 
