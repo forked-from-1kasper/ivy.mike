@@ -1,5 +1,5 @@
 
-\import Proto \import Path
+\import Proto \import Path \import Equiv \import Int
 
 \data Graph (edges : Nat -> Nat -> \Type)
    | node (n : Nat)
@@ -8,17 +8,29 @@
       | _, m, _, right => node m
    }
 
-\func is-in-graph (edges : Nat -> Nat -> \Type) (a : Graph edges)
+\func is-in-graph {edges : Nat -> Nat -> \Type} (a : Graph edges)
    => \Sigma (b : Graph edges) (H : a =/= b) (a = b)
 
 \func Point-space (edges : Nat -> Nat -> \Type)
-   => \Sigma (a : Graph edges) (is-in-graph edges a)
+   => \Sigma (a : Graph edges) (is-in-graph a)
 
 \func isConnected (edges : Nat -> Nat -> \Type)
    => isProp (Point-space edges)
 
-\func isEulerian (edges : Nat -> Nat -> \Type) (a b : Graph edges)
-   => isContr (a = b)
+\func isAcyclic (edges : Nat -> Nat -> \Type)
+   => K (Graph edges)
+
+\func isCycle {edges : Nat -> Nat -> \Type} {a : Graph edges} (p : a = a)
+   => p =/= rfl
+
+\record isNotEulerian {edges : Nat -> Nat -> \Type} {a b : Graph edges} (p : a = b) {
+   | half-way : Graph edges
+   | first-part : a = half-way
+   | second-part : half-way = b
+   | loop : half-way = half-way
+   | loop-is-cycle : isCycle loop
+   | split : first-part # loop # second-part = p
+}
 
 \func Koenigsberg-edges (n m : Nat) : \Type \elim n, m
    | 0, 1 => unit
@@ -27,6 +39,3 @@
    | 0, 2 => bool
    | 0, 3 => bool
    | _, _ => empty
-
-\func Koenigsberg-problem-statement
-   => not (isEulerian Koenigsberg-edges (node 0) (node 0))

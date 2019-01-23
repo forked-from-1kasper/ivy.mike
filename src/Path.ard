@@ -132,6 +132,8 @@
 \func Set      : \Type => \Sigma (X : \Type) (isSet X)
 \func Groupoid : \Type => \Sigma (X : \Type) (isGroupoid X)
 
+\func K (A : \Type) => \Pi {a : A} (p : a = a) -> p = rfl
+
 \func homotopy {A : \Type} (C : A -> \Type) (f g : \Pi (x : A) -> C x)
    => \Pi (x : A) -> f x = g x
 
