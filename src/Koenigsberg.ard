@@ -39,3 +39,7 @@
    | 0, 2 => bool
    | 0, 3 => bool
    | _, _ => empty
+
+\func Koenigsberg-statement
+   => \Sigma (a : Graph Koenigsberg-edges)
+      (\Pi (p : a = a) -> isCycle p -> isNotEulerian p)
