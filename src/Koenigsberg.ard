@@ -8,11 +8,11 @@
       | _, m, _, right => node m
    }
 
-\func is-in-graph {edges : Nat -> Nat -> \Type} (a : Graph edges)
+\func isInGraph {edges : Nat -> Nat -> \Type} (a : Graph edges)
    => \Sigma (b : Graph edges) (H : a =/= b) (a = b)
 
 \func Point-space (edges : Nat -> Nat -> \Type)
-   => \Sigma (a : Graph edges) (is-in-graph a)
+   => \Sigma (a : Graph edges) (isInGraph a)
 
 \func isConnected (edges : Nat -> Nat -> \Type)
    => isProp (Point-space edges)
@@ -32,6 +32,13 @@
    | split : first-part # loop # second-part = p
 }
 
+\func isPathCover {edges : Nat -> Nat -> \Type} {a b : Graph edges}
+   (p : a = b) (c : Graph edges)
+   => \Sigma (q : a = c) (r : c = b) (q # r = p)
+
+\func coverAll {edges : Nat -> Nat -> \Type} {a b : Graph edges} (p : a = b)
+   => \Pi (x : Graph edges) -> isInGraph x -> isPathCover p x
+
 \func Koenigsberg-edges (n m : Nat) : \Type \elim n, m
    | 0, 1 => unit
    | 1, 2 => unit
@@ -40,6 +47,5 @@
    | 0, 3 => bool
    | _, _ => empty
 
-\func Koenigsberg-statement
-   => \Sigma (a : Graph Koenigsberg-edges)
-      (\Pi (p : a = a) -> isCycle p -> isNotEulerian p)
+\func Koenigsberg-statement (a : Graph Koenigsberg-edges)
+   => \Pi (p : a = a) -> coverAll p -> isCycle p -> isNotEulerian p
