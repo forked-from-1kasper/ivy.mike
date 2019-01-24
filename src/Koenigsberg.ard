@@ -9,7 +9,7 @@
    }
 
 \func isInGraph {edges : Nat -> Nat -> \Type} (a : Graph edges)
-   => \Sigma (b : Graph edges) (H : a =/= b) (a = b)
+   => \Sigma (n m : Nat) (p : a = node n) (condition : edges n m)
 
 \func Point-space (edges : Nat -> Nat -> \Type)
    => \Sigma (a : Graph edges) (isInGraph a)
@@ -23,14 +23,9 @@
 \func isCycle {edges : Nat -> Nat -> \Type} {a : Graph edges} (p : a = a)
    => p =/= rfl
 
-\record isNotEulerian {edges : Nat -> Nat -> \Type} {a b : Graph edges} (p : a = b) {
-   | half-way : Graph edges
-   | first-part : a = half-way
-   | second-part : half-way = b
-   | loop : half-way = half-way
-   | loop-is-cycle : isCycle loop
-   | split : first-part # loop # second-part = p
-}
+\func isNotEulerian {edges : Nat -> Nat -> \Type} {a b : Graph edges} (p : a = b)
+   => \Sigma (c : Graph edges) (q : a = c) (r : c = b) (loop : c = c)
+      (loop-is-cycle : isCycle loop) (q # loop # r = p)
 
 \func isPathCover {edges : Nat -> Nat -> \Type} {a b : Graph edges}
    (p : a = b) (c : Graph edges)
