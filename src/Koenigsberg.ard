@@ -9,7 +9,7 @@
    }
 
 \func isConnected {A : \Type} (edges : A -> A -> \Type)
-   => \Pi (x y : A) -> edges x y
+   => \Pi (x y : A) -> either (edges x y) (edges y x)
 
 \func isAcyclic {A : \Type} (edges : A -> A -> \Type)
    => K (Graph edges)
