@@ -24,4 +24,5 @@ Credits
 -------
 
 * Maxim Sokhatsky
+* Siegmentation Fault
 
