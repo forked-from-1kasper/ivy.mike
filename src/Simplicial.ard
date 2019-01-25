@@ -1,0 +1,26 @@
+
+\import Path \import Proto
+
+\data Simplex (n : Nat) \elim n
+   | suc n => {
+      | base
+      | lift (x : Simplex n)
+      | glue (x : Simplex n) I \with {
+         | _, left => base
+         | x, right => lift x
+      }
+   }
+
+\data Trunc (A : \Type)
+   | elem A
+   | uniq (x y : Trunc A) (i : I) \elim i {
+      | left => x
+      | right => y
+   }
+
+\func IteratedUnit (n : Nat) : \Type \elim n
+   | 0 => empty
+   | suc n => either unit (IteratedUnit n)
+
+\func FilledSimplex (n : Nat)
+   => Trunc (IteratedUnit n)

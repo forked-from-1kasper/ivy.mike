@@ -1,0 +1,5 @@
+
+\import Iso
+
+\func Iso=>Path {A B : \Type} (H : Iso A B) : A = B
+   => path (iso H.forward H.backward H.backward-forward H.forward-backward)

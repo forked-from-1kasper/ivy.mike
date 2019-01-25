@@ -1,9 +1,13 @@
 
-\import Proto
+\import Proto \import Ishae
 
 \record Iso (A B : \Type) {
-  | forward : A -> B
-  | backward : B -> A
-  | backward-forward : backward o forward ~ idfun
-  | forward-backward : forward o backward ~ idfun
+   | forward : A -> B
+   | backward : B -> A
+   | backward-forward : backward o forward ~ idfun
+   | forward-backward : forward o backward ~ idfun
 }
+
+\func Hae=>Iso {A B : \Type} (H : Hae A B) : Iso A B
+   => \let h : ishae H.1 => H.2
+      \in \new Iso A B H.1 h.g h.nu h.eps
