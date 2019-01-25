@@ -24,3 +24,21 @@
 
 \func FilledSimplex (n : Nat)
    => Trunc (IteratedUnit n)
+
+\func Interval => Simplex 2
+   \where {
+      \func left : Interval => base
+      \func right : Interval => lift base
+      \func seg : left = right => path (glue base)
+   }
+
+\func Triangle => Simplex 3
+   \where {
+      \func left : Triangle => base
+      \func right : Triangle => lift base
+      \func up : Triangle => lift (lift base)
+
+      \func left-right : left = right => path (glue base)
+      \func right-up : right = up => cong lift Interval.seg
+      \func left-up : left = up => path (glue (lift base))
+   }
