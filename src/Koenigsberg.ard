@@ -1,46 +1,46 @@
 
 \import Proto \import Path \import Equiv \import Int
 
-\data Graph (edges : Nat -> Nat -> \Type)
-   | node (n : Nat)
-   | line (n m : Nat) (condition : edges n m) I \with {
+\data Graph {A : \Type} (edges : A -> A -> \Type)
+   | node (n : A)
+   | line (n m : A) (condition : edges n m) I \with {
       | n, _, _, left => node n
       | _, m, _, right => node m
    }
 
-\func isInGraph {edges : Nat -> Nat -> \Type} (a : Graph edges)
-   => \Sigma (n m : Nat) (p : a = node n) (condition : edges n m)
+\func isConnected {A : \Type} (edges : A -> A -> \Type)
+   => \Pi (x y : A) -> edges x y
 
-\func Point-space (edges : Nat -> Nat -> \Type)
-   => \Sigma (a : Graph edges) (isInGraph a)
-
-\func isConnected (edges : Nat -> Nat -> \Type)
-   => isProp (Point-space edges)
-
-\func isAcyclic (edges : Nat -> Nat -> \Type)
+\func isAcyclic {A : \Type} (edges : A -> A -> \Type)
    => K (Graph edges)
 
-\func isCycle {edges : Nat -> Nat -> \Type} {a : Graph edges} (p : a = a)
+\func isCycle {A : \Type} {edges : A -> A -> \Type} {a : Graph edges} (p : a = a)
    => p =/= rfl
 
-\func isNotEulerian {edges : Nat -> Nat -> \Type} {a b : Graph edges} (p : a = b)
+\func isNotEulerian {A : \Type} {edges : A -> A -> \Type} {a b : Graph edges} (p : a = b)
    => \Sigma (c : Graph edges) (q : a = c) (r : c = b) (loop : c = c)
       (loop-is-cycle : isCycle loop) (q # loop # r = p)
 
-\func isPathCover {edges : Nat -> Nat -> \Type} {a b : Graph edges}
+\func isPathCover {A : \Type} {edges : A -> A -> \Type} {a b : Graph edges}
    (p : a = b) (c : Graph edges)
    => \Sigma (q : a = c) (r : c = b) (q # r = p)
 
-\func coverAll {edges : Nat -> Nat -> \Type} {a b : Graph edges} (p : a = b)
-   => \Pi (x : Graph edges) -> isInGraph x -> isPathCover p x
+\func coverAll {A : \Type} {edges : A -> A -> \Type} {a b : Graph edges} (p : a = b)
+   => \Pi (x : Graph edges) -> isPathCover p x
 
-\func Koenigsberg-edges (n m : Nat) : \Type \elim n, m
-   | 0, 1 => unit
-   | 1, 2 => unit
-   | 1, 3 => unit
-   | 0, 2 => bool
-   | 0, 3 => bool
+\data Koenigsberg
+   | Altstadt
+   | Kneiphof
+   | Lomse
+   | Vorstadt
+
+\func Koenigsberg-edges (n m : Koenigsberg) : \Type \elim n, m
+   | Kneiphof, Lomse => unit
+   | Altstadt, Lomse => unit
+   | Lomse, Vorstadt => unit
+   | Altstadt, Kneiphof => bool
+   | Altstadt, Vorstadt => bool
    | _, _ => empty
 
-\func Koenigsberg-statement (a : Graph Koenigsberg-edges)
-   => \Pi (p : a = a) -> coverAll p -> isCycle p -> isNotEulerian p
+\func Koenigsberg-statement (area : Graph Koenigsberg-edges)
+   => \Pi (p : area = area) -> coverAll p -> isCycle p -> isNotEulerian p
