@@ -1,5 +1,5 @@
 
-\import Path \import Proto
+\import Path \import Proto \import Equiv
 
 \data Simplex (n : Nat) \elim n
    | suc n => {
@@ -17,6 +17,10 @@
       | left => x
       | right => y
    }
+
+\func unquote {A : \Type} (x : Trunc (Trunc A)) : Trunc A \elim x
+   | elem x => x
+   | uniq x y i => uniq (unquote x) (unquote y) i
 
 \func IteratedUnit (n : Nat) : \Type \elim n
    | 0 => empty

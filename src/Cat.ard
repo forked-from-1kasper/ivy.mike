@@ -5,25 +5,25 @@
   (carrier : \Type)
   (hom : \Pi (x y : carrier) -> \Type)
   (id : \Pi (x : carrier) -> hom x x)
-  (c : \Pi (x y z : carrier) (h : hom x y) (w : hom y z) -> hom x z)
+  (c : \Pi {x y z : carrier} (h : hom x y) (w : hom y z) -> hom x z)
   (homSet : \Pi (x y : carrier) -> isSet (hom x y))
-  (left : \Pi (x y : carrier) (f : hom x y) -> c x x y (id x) f = f)
-  (right : \Pi (x y : carrier) (f : hom x y) -> c x y y f (id y) = f)
-  (assoc : \Pi (x y z w : carrier) (f : hom x y) (g : hom y z) (h : hom z w) ->
-    c x z w (c x y z f g) h = c x y w f (c y z w g h))
+  (left : \Pi {x y : carrier} (f : hom x y) -> c (id x) f = f)
+  (right : \Pi {x y : carrier} (f : hom x y) -> c f (id y) = f)
+  (assoc : \Pi {x y z w : carrier} (f : hom x y) (g : hom y z) (h : hom z w) ->
+    c (c f g) h = c f (c g h))
 
 \record catgroupoid
   (carrier : \Type)
   (hom : \Pi (x y : carrier) -> \Type)
   (id : \Pi (x : carrier) -> hom x x)
-  (c : \Pi (x y z : carrier) -> hom x y -> hom y z -> hom x z)
-  (inv : \Pi (x y : carrier) -> hom x y -> hom y x)
-  (inv_left : \Pi (x y : carrier) (p : hom x y) -> c x y x p (inv x y p) = id x)
-  (inv_right : \Pi (x y : carrier) (p : hom x y) -> c y x y (inv x y p) p = id y)
-  (left : \Pi (x y : carrier) (f : hom x y) -> c x x y (id x) f = f)
-  (right : \Pi (x y : carrier) (f : hom x y) -> c x y y f (id y) = f)
-  (assoc : \Pi (x y z w : carrier) (f : hom x y) (g : hom y z) (h : hom z w) ->
-    c x z w (c x y z f g) h = c x y w f (c y z w g h))
+  (c : \Pi {x y z : carrier} -> hom x y -> hom y z -> hom x z)
+  (inv : \Pi {x y : carrier} -> hom x y -> hom y x)
+  (inv-left : \Pi {x y : carrier} (p : hom x y) -> c p (inv p) = id x)
+  (inv-right : \Pi {x y : carrier} (p : hom x y) -> c (inv p) p = id y)
+  (left : \Pi {x y : carrier} (f : hom x y) -> c (id x) f = f)
+  (right : \Pi (x y : carrier) (f : hom x y) -> c f (id y) = f)
+  (assoc : \Pi {x y z w : carrier} (f : hom x y) (g : hom y z) (h : hom z w) ->
+    c (c f g) h = c f (c g h))
 
 \record iso
   (C : precategory)
@@ -31,8 +31,8 @@
   (B : C.carrier)
   (f : C.hom A B)
   (g : C.hom B A)
-  (section : (C.c A B A f g) = (C.id A))
-  (recract : (C.c B A B g f) = (C.id B))
+  (section : (C.c f g) = (C.id A))
+  (recract : (C.c g f) = (C.id B))
 
 \func isCategory (C : precategory) : \Type
    => \Pi (A : C.carrier) -> isContr (\Sigma (B : C.carrier) (iso C A B))
@@ -54,4 +54,4 @@
 
 \func isComm (X : precategory) (A B C D : X.carrier)
       (f : X.hom A B) (g : X.hom C D) (h : X.hom A C) (i : X.hom B D)
-   => X.c A C D h g = X.c A B D f i
+   => X.c h g = X.c f i

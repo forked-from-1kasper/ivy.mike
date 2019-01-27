@@ -57,17 +57,17 @@
 \data tuple (A B : \Type) | pair (a : A) (b : B)
 
 \func fst {A B : \Type} (c : tuple A B) : A
-    \elim c { | pair a b => a }
+   \elim c { | pair a b => a }
 
 \func snd {A B : \Type} (c : tuple A B) : B
-    \elim c { | pair a b => b }
+   \elim c { | pair a b => b }
 
 \func tupleRec {A B C : \Type} (c : \Pi (x : A) (y : B) -> C) : \Pi (x : tuple A B) -> C
    => \lam (x : tuple A B) => \case x \with { | pair a b => c a b }
 
 \func tupleInd {A B : \Type} (C : tuple A B -> \Type)
       (c : \Pi (x : A) (y : B) -> C (pair x y)) (z : tuple A B) : C z
-    \elim z { | pair a b => c a b }
+   \elim z { | pair a b => c a b }
 
 -- Either type
 
@@ -80,37 +80,36 @@
       (x : \Pi (a : A) -> C (inl a))
       (y : \Pi (b : B) -> C (inr b))
       (z : either A B) : C z
-    \elim z { | inl i => x i | inr j => y j }
+   \elim z { | inl i => x i | inr j => y j }
 
 -- Exists type
 
 \data exists (A : \Type) (B : A -> \Type) | sig (a : A) (b : B a)
 
-\func pr1 {A : \Type} {B : A -> \Type} (x : exists A B)
-    : A \elim x { sig a b => a }
+\func pr1 {A : \Type} {B : A -> \Type} (x : exists A B) : A
+   \elim x { sig a b => a }
 
-\func pr2 {A : \Type} {B : A -> \Type} (x : exists A B)
-    : B (pr1 x) \elim x { sig a b => b }
+\func pr2 {A : \Type} {B : A -> \Type} (x : exists A B) : B (pr1 x)
+   \elim x { sig a b => b }
 
 -- Bool type
 
 \data bool | false | true
 
-\func negation (x : bool)
-    : bool \elim x { | false => true | true => false }
+\func negation (x : bool) : bool \elim x
+   { | false => true | true => false }
 
-\func or (x : bool)
-    : bool -> bool \elim x { | false => idfun | true => lambda true }
+\func or (x : bool) : bool -> bool \elim x
+   { | false => idfun | true => lambda true }
 
-\func and (x : bool)
-    : bool -> bool \elim x { | false => lambda false | true => idfun }
+\func and (x : bool) : bool -> bool
+   \elim x { | false => lambda false | true => idfun }
 
-\func boolEq
-    : bool -> bool -> bool
+\func boolEq : bool -> bool -> bool
    => lambda negation
 
-\func boolRec (A : \Type) (f t : A) (x : bool)
-    : A \elim x { | false => f | true => t }
+\func boolRec (A : \Type) (f t : A) (x : bool) : A \elim x
+   { | false => f | true => t }
 
-\func boolInd (A : bool -> \Type) (f : A false) (t : A true) (n : bool)
-    : A n \elim n { | false => f | true => t }
+\func boolInd (A : bool -> \Type) (f : A false) (t : A true) (n : bool) : A n
+   \elim n { | false => f | true => t }

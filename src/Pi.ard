@@ -2,12 +2,10 @@
 \func Pi (A : \Type) (B : A -> \Type)
    => \Pi (x : A) -> B x
 
-\func lam (A : \Type) (B : A -> \Type) (b : Pi A B)
-    : Pi A B
+\func lam (A : \Type) (B : A -> \Type) (b : Pi A B) : Pi A B
   => \lam (x : A) => b x
 
-\func app (A : \Type) (B : A -> \Type) (f : Pi A B) (a : A)
-    : B a
+\func app (A : \Type) (B : A -> \Type) (f : Pi A B) (a : A) : B a
    => f a
 
 \func beta (A : \Type) (B : A -> \Type) (f : Pi A B) (a : A)

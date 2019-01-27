@@ -146,3 +146,11 @@
    | left => b0
    | right => b1
    | i => s @ i
+
+\data No
+   | implicit I
+   \where {
+      \func i0 => implicit left
+      \func i1 => implicit right
+      \func seg : i0 = i1 => path implicit
+   }
