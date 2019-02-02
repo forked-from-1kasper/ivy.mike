@@ -1,0 +1,9 @@
+
+\import Connection \import Proto \import Path
+
+\data Generalized (A : \Type)
+   | incl A
+   | glue (x y : A) (i : I) \elim i {
+      | left => incl x
+      | right => incl y
+   }

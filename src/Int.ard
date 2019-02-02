@@ -9,6 +9,7 @@
    -1 = inl zero
    -2 = inl (suc zero) -}
 
+\func minus-one-Z : Z => inl zero
 \func zero-Z : Z => inr zero
 \func one-Z : Z => inr (suc zero)
 
