@@ -55,9 +55,9 @@
 \func seg : left = right => path idfun
 
 \func neg (i : I) : I \elim i
-  | left => right
-  | right => left
-  | i => inv seg @ i
+   | left => right
+   | right => left
+   | i => inv seg @ i
 
 \func \infixl 5 # {A : \Type} {a b c : A} (p : a = b) (q : b = c) : a = c
    => coercion right left (\lam i => p @ i = c) q

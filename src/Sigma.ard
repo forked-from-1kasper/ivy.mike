@@ -4,30 +4,24 @@
 \func Sigma (A : \Type) (B : A -> \Type)
    => \Sigma (x : A) (B x)
 
-\func dpair (A : \Type) (B : A -> \Type) (a : A) (b : B a)
-    : Sigma A B
+\func dpair (A : \Type) (B : A -> \Type) (a : A) (b : B a) : Sigma A B
    => (a, b)
 
-\func pi1 (A : \Type) (B : A -> \Type) (x : Sigma A B)
-    : A
+\func pi1 (A : \Type) (B : A -> \Type) (x : Sigma A B) : A
    => x.1
 
-\func pi2 (A : \Type) (B : A -> \Type) (x : Sigma A B)
-    : B (pi1 A B x)
+\func pi2 (A : \Type) (B : A -> \Type) (x : Sigma A B) : B (pi1 A B x)
    => x.2
 
 \func sigRec (A : \Type) (B : A -> \Type) (C : \Type)
-      (g : \Pi (x : A) -> \Pi (y : B x) -> C)
-      (p : Sigma A B) : C => g p.1 p.2
+   (g : \Pi (x : A) -> \Pi (y : B x) -> C)
+   (p : Sigma A B) : C => g p.1 p.2
 
-\func beta1 (A : \Type) (B : A -> \Type) (a : A) (b : B a)
-    : a = pi1 A B (a, b)
+\func beta1 (A : \Type) (B : A -> \Type) (a : A) (b : B a) : a = pi1 A B (a, b)
    => rfl
 
-\func beta2 (A : \Type) (B : A -> \Type) (a : A) (b : B a)
-    : b = pi2 A B (a, b)
+\func beta2 (A : \Type) (B : A -> \Type) (a : A) (b : B a) : b = pi2 A B (a, b)
    => rfl
 
-\func eta2 (A : \Type) (B : A -> \Type) (p : Sigma A B)
-    : p = (p.1, p.2)
+\func eta2 (A : \Type) (B : A -> \Type) (p : Sigma A B) : p = (p.1, p.2)
    => rfl

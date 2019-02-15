@@ -25,6 +25,9 @@
 \func IteratedUnit (n : Nat) : \Type \elim n
    | 0 => empty
    | suc n => either unit (IteratedUnit n)
+   \where {
+      \func lift {n : Nat} (x : IteratedUnit n) : IteratedUnit (suc n) => inr x
+   }
 
 \func FilledSimplex (n : Nat)
    => Trunc (IteratedUnit n)

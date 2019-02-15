@@ -3,9 +3,9 @@
 
 \data Graph {A : \Type} (edges : A -> A -> \Type)
    | node (n : A)
-   | line (n m : A) (condition : edges n m) I \with {
-      | n, _, _, left => node n
-      | _, m, _, right => node m
+   | line (n m : A) (condition : edges n m) (i : I) \elim i {
+      | left => node n
+      | right => node m
    }
 
 \func isConnected {A : \Type} (edges : A -> A -> \Type)
