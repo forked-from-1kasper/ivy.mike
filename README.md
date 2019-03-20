@@ -25,4 +25,5 @@ Credits
 
 * Maxim Sokhatsky
 * Siegmentation Fault
+* Sergei Stepanenko
 
