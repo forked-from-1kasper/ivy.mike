@@ -2,7 +2,7 @@
 \import Path \import Iso \import Ishae
 
 \func fiber {A B : \Type} (f : A -> B) (b : B)
-   => \Sigma (a : A) (f a = b)
+   => \Sigma (a : A) (b = f a)
 
 \func isEquiv {A B : \Type} (f : A -> B)
    => \Pi (b : B) -> isContr (fiber f b)
