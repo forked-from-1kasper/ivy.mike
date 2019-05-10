@@ -8,17 +8,18 @@
       | right => base
    }
 
-\func loopS1 : base = base => path loop
+\func loopS1 : \Type => base = base
+\func loopP : loopS1 => path loop
 \func invLoop : base = base => path (\lam i => loop (neg i))
 
 \func triv : base = base
    => rfl
 
 \func one-turn (x : base = base) : base = base
-   => x # loopS1
+   => x # loopP
 
 \func back-turn (x : base = base) : base = base
-   => x # inv loopS1
+   => x # inv loopP
 
 \func helix (x : S1) : \Type \elim x
    | base => Z
@@ -27,5 +28,5 @@
 \func winding (p : base = base) : Z
    => transport helix p zero-Z
 
-\func loopZ1 : winding loopS1 = one-Z => rfl
+\func loopZ1 : winding loopP = one-Z => rfl
 \func loopZ0 : winding triv = zero-Z => rfl
