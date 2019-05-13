@@ -8,7 +8,6 @@
 \func neg_neg : \Pi (x : I) -> ((inv seg) @ (inv seg @ x)) = x => \lam x =>
     ((\lam x => (\lam i => inv (squeezePath (inv seg) i)) (inv seg @ x)) x)
     # (inv ((\lam x => ((\lam x => (\lam i => inv (squeezePath seg i)) (seg @ x)) x) # seg) x))
-      \where \func squeezePath {A : \Type} {a a' : A} (p : a = a') (i : I) : a = p @ i => path (\lam j => p @ meet i j)
 
 \func twist : I = I => Iso=>Path \new Iso I I neg neg neg_neg neg_neg
 

@@ -154,3 +154,5 @@
       \func i1 => implicit right
       \func seg : i0 = i1 => path implicit
    }
+
+\func squeezePath {A : \Type} {a a' : A} (p : a = a') (i : I) : a = p @ i => path (\lam j => p @ meet i j)
