@@ -3,6 +3,8 @@
 \import Path
 \import Univ
 
+\func bundle (B : \Type) : \Type => \Sigma (E : \Type) (phi : E -> B)
+
 \func family (B : \Type) : \Type => B -> \Type
 
 \func total (B : \Type) (F : family B) : \Type => \Sigma (x : B) (F x)
@@ -28,13 +30,20 @@
   \Pi (x : F y) -> (encode B F y (decode B F y x)) = x
   => \lam (x : F y) => path (\lam i => encode B F ((decode B F y x).2 @ i) ((y, x), (path (\lam _ => y))))
 
--- TODO
--- x : fiber (total B F) B (trivial B F) y
---                                        (\lam (c : \Sigma (d : B) F d) => d) a = y
--- x : \Sigma (a : \Sigma (b : B) (F b)) ((trivial B F) a = y)
 \func encode->decode (B : \Type) (F : family B) (y : B) :
   \Pi (x : fiber (total B F) B (trivial B F) y) -> (decode B F y (encode B F y x)) = x
-  => \lam (x : fiber (total B F) B (trivial B F) y) => path (\lam i => {?})
+  => \lam (x : fiber (total B F) B (trivial B F) y)
+  => path (\lam i => (((inv x.2) @ i,
+                       (pathOverFamily (transport_twist F x.2 x.1.2)) @ i),
+                      (pathOverFamily ((
+                        coe_path (inv x.2) rfl rfl)
+                      # (comp-assoc (inv (inv x.2)) rfl rfl)
+                         # (refl-right ((inv (inv x.2)) # rfl))
+                            # (refl-right (inv (inv x.2)))
+                               # (inv_inv x.2))) @ i))
+          \where
+            \func transport_twist {A : \Type} (B : A -> \Type) {a b : A} (p : a = b) (x : B a) : transport B (inv p) (transport B p x) = x =>
+              J (\lam z (p' : a = z) => transport B (inv p') (transport B p' x) = x) rfl p
 
-\func TrivialFiberBundle=PiType (B : \Type) (F : family B) (y : B) : (fiber (total B F) B (trivial B F) y) = (F y)
+\func TrivialFiberBundle=DependentType (B : \Type) (F : family B) (y : B) : (fiber (total B F) B (trivial B F) y) = (F y)
   => Iso=>Path (\new Iso (fiber (total B F) B (trivial B F) y) (F y) (encode B F y) (decode B F y) (encode->decode B F y) (decode->encode B F y))
