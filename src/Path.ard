@@ -60,7 +60,10 @@
    | i => inv seg @ i
 
 \func \infixl 5 # {A : \Type} {a b c : A} (p : a = b) (q : b = c) : a = c
-   => coercion right left (\lam i => p @ i = c) q
+   => concatOverFamily p q
+       \where
+          \func concatOverFamily {A : I -> \Type} {a : A left} {a' a'' : A right} (p : Path A a a') (q : a' = a'') : Path A a a'' =>
+             transport (Path A a) q p
 
 \func kan {A : \Type} {a b c d : A} (bottom : a = b)
    (left : a = c) (right : b = d) : c = d
@@ -78,10 +81,13 @@
    (u : a = b) (v : c = d) (p : a = c) (q : b = d)
    => Path (\lam i => u @ i = v @ i) p q
 
+\func pathOverFamily {A : I -> \Type} {a : A left} {a' : A right} (p : coe A a right = a') : Path A a a' =>
+   #.concatOverFamily (path (coe A a)) p
+
 -- Groupoid Interpretation
 
 \func refl-left {A : \Type} {a b : A} (p : a = b) : rfl # p = p
-   => rfl
+   => J (\lam _ p => rfl # p = p) rfl p
 
 \func refl-right {A : \Type} {a b : A} (p : a = b) : p # rfl = p
    => coercion left right (\lam i => connAnd p i # rfl = connAnd p i) rfl
@@ -100,12 +106,20 @@
 \func contr (A : \Type) (a b : A) (p : a = b) : theta A a = (b, p)
    => path (\lam i => (p @ i, path (\lam j => p @ meet i j)))
 
+\func coe_path {A : \Type} {a1 a2 a3 a4 : A} (p : a2 = a1) (q : a2 = a3) (r : a3 = a4)
+   : coe (\lam i => p @ i = r @ i) q right = (inv p # (q # r))
+   => coe (\lam j => coe (\lam i => p @ i = r @ i) q j = (inv (connAnd p j) # (q # connAnd r j)))
+          (inv (refl-left q)) right
+
 \func D (A : \Type) : \Type => \Pi (x y : A) -> x = y -> \Type
 
 \func J {A : \Type} {a : A} (C : \Pi (x : A) -> a = x -> \Type)
         (d : C a (refl a)) {x : A} (p : a = x) : C x p
 -- => coe (\lam i => C (p @ i) (connAnd p i)) d right -- normal form
    => subst (singl A a) (\lam x => C x.1 x.2) (theta A a) (x, p) (contr A a x p) d
+
+\func inv_inv {A : \Type} {a a' : A} (p : a = a') : inv (inv p) = p =>
+   J (\lam _ p => inv (inv p) = p) rfl p
 
 \func comp-assoc {A : \Type} {a b c d : A}
    (p : a = b) (q : b = c) (r : c = d) : p # (q # r) = (p # q) # r
@@ -154,5 +168,3 @@
       \func i1 => implicit right
       \func seg : i0 = i1 => path implicit
    }
-
-\func squeezePath {A : \Type} {a a' : A} (p : a = a') (i : I) : a = p @ i => path (\lam j => p @ meet i j)
