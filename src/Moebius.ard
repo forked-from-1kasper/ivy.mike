@@ -5,24 +5,17 @@
 \import Iso
 \import Univ
 
-\func neg_neg : \Pi (x : I) -> ((inv seg) @ (inv seg @ x)) = x
-  => \lam x
-    =>  ((\lam x
-      => (\lam i
-        => inv (connAnd (inv seg) i)) (inv seg @ x)) x)
-        # (inv ((\lam x
-          => ((\lam x
-            => (\lam i
-              => inv (connAnd seg i)) (seg @ x)) x) # seg) x))
+\func neg-neg (x : I) : neg (neg x) = x
+   => inv (connAnd (inv seg) (neg x)) # I-contr-right x
 
 \func twist : I = I => Iso=>Path
-    \new Iso I I neg neg neg_neg neg_neg
+   \new Iso I I neg neg neg-neg neg-neg
 
 \func M : \Pi (x : S1) -> \Type => \lam x => \case x \with {
-  | base => I
-  | loop i => twist @ i
+   | base => I
+   | loop i => twist @ i
 }
 
 \record Moebius (p1 : S1) {
-  \field f1 : M(p1)
+   \field f1 : M(p1)
 }

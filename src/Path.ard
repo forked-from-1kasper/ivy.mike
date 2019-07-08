@@ -1,8 +1,8 @@
 
 \import Proto \import Connection
 
-\func coercion (i k : I) (A : I -> \Type) : A i -> A k
-   => coe (\lam i => A i -> A k) (\lam x => coe A x k) i
+\func coercion (i k : I) (A : I -> \Type) (x : A i) : A k
+   => coe2 A i x k
 
 \func refl {A : \Type} (a : A) : a = a
    => path (\lam i => a)
@@ -37,7 +37,11 @@
 \func transport {A : \Type} (B : A -> \Type) {a b : A} (p : a = b) (x : B a) : B b
    => coercion left right (\lam i => B (p @ i)) x
 
-\func subst (A : \Type) (B : A -> \Type) (a b : A) (p : a = b) (x : B a) : B b
+\func transport-twist {A : \Type} (B : A -> \Type) {a b : A}
+   (p : a = b) (x : B a) : transport B (inv p) (transport B p x) = x
+   => J (\lam z q => transport B (inv q) (transport B q x) = x) rfl p
+
+\func subst {A : \Type} {B : A -> \Type} {a b : A} (p : a = b) (x : B a) : B b
    => coercion left right (\lam i => B (p @ i)) x
 
 \func HPath {A B : \Type} (a : A) (b : B) (P : A = B) : \Type
@@ -54,10 +58,7 @@
 
 \func seg : left = right => path idfun
 
-\func neg (i : I) : I \elim i
-   | left => right
-   | right => left
-   | i => inv seg @ i
+\func neg (i : I) : I => inv seg @ i
 
 \func \infixl 5 # {A : \Type} {a b c : A} (p : a = b) (q : b = c) : a = c
    => concatOverFamily p q
@@ -103,10 +104,10 @@
 \func cong {A B : \Type} (f : A -> B) {a b : A} (p : a = b) : f a = f b
    => path (\lam i => f (p @ i))
 
-\func contr (A : \Type) (a b : A) (p : a = b) : theta A a = (b, p)
+\func contr {A : \Type} {a b : A} (p : a = b) : theta A a = (b, p)
    => path (\lam i => (p @ i, path (\lam j => p @ meet i j)))
 
-\func coe_path {A : \Type} {a1 a2 a3 a4 : A} (p : a2 = a1) (q : a2 = a3) (r : a3 = a4)
+\func coe-path {A : \Type} {a1 a2 a3 a4 : A} (p : a2 = a1) (q : a2 = a3) (r : a3 = a4)
    : coe (\lam i => p @ i = r @ i) q right = (inv p # (q # r))
    => coe (\lam j => coe (\lam i => p @ i = r @ i) q j = (inv (connAnd p j) # (q # connAnd r j)))
           (inv (refl-left q)) right
@@ -116,9 +117,9 @@
 \func J {A : \Type} {a : A} (C : \Pi (x : A) -> a = x -> \Type)
         (d : C a (refl a)) {x : A} (p : a = x) : C x p
 -- => coe (\lam i => C (p @ i) (connAnd p i)) d right -- normal form
-   => subst (singl A a) (\lam x => C x.1 x.2) (theta A a) (x, p) (contr A a x p) d
+   => transport (\lam x => C x.1 x.2) (contr p) d
 
-\func inv_inv {A : \Type} {a a' : A} (p : a = a') : inv (inv p) = p =>
+\func inv-inv {A : \Type} {a a' : A} (p : a = a') : inv (inv p) = p =>
    J (\lam _ p => inv (inv p) = p) rfl p
 
 \func comp-assoc {A : \Type} {a b c d : A}
@@ -151,15 +152,25 @@
 \func homotopy {A : \Type} (C : A -> \Type) (f g : \Pi (x : A) -> C x)
    => \Pi (x : A) -> f x = g x
 
-\func funext {A : \Type} {C : A -> \Type} (f g : \Pi (x : A) -> C x)
+\func funext {A : \Type} (C : A -> \Type) {f g : \Pi (x : A) -> C x}
    (p : homotopy C f g) : f = g
    => path (\lam i x => (p x) @ i)
+
+\func funext-nondep {A B : \Type} {f g : A -> B} :
+   homotopy (\lam _ => B) f g -> f = g
+   => funext (\lam _ => B)
 
 \func I-ind (C : I -> \Type) {b0 : C left} {b1 : C right} (s : Path C b0 b1)
    (i : I) : C i \elim i
    | left => b0
    | right => b1
    | i => s @ i
+
+\func I-contr-left (x : I) : left = x
+   => coercion left x (\lam x => left = x) rfl
+
+\func I-contr-right (x : I) : right = x
+   => coercion right x (\lam x => right = x) rfl
 
 \data No
    | implicit I

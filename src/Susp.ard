@@ -1,0 +1,7 @@
+\data Susp (A : \Type)
+   | north
+   | south
+   | merid (a : A) (i : I) \elim i {
+      | left => north
+      | right => south
+   }

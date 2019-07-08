@@ -4,70 +4,47 @@
 \import Univ
 
 \func family (B : \Type) : \Type
-  => B -> \Type
+   => B -> \Type
 
-\func total (B : \Type) (F : family B) : \Type
-  => \Sigma (x : B) (F x)
+\func total {B : \Type} (F : family B) : \Type
+   => \Sigma (x : B) (F x)
 
-\func trivial (B : \Type) (F : family B) : total B F -> B
-  => \lam (x : total B F) => x.1
+\func trivial {B : \Type} (F : family B) : total F -> B
+   => \lam (x : total F) => x.1
 
-\func fiber (A B : \Type) (f : A -> B) (base : B) : \Type
+\func fiber {A B : \Type} (f : A -> B) (base : B) : \Type
    => \Sigma (x : A) (f x = base)
 
-\func encode (B : \Type) (F : B -> \Type) (y : B) :
-      fiber (total B F) B (trivial B F) y -> F y
-   => \lam (x : fiber (total B F) B (trivial B F) y)
-    => subst B F x.1.1 y x.2 x.1.2
+\func encode {B : \Type} (F : B -> \Type) {y : B}
+      (x : fiber (trivial F) y) : F y
+   => transport F x.2 x.1.2
 
-\func decode (B : \Type) (F : B -> \Type) (y : B) :
-      F y -> fiber (total B F) B (trivial B F) y
-   => \lam (x : F y) => ((y, x), path (\lam i => y))
+\func decode {B : \Type} (F : B -> \Type) {y : B}
+      (x : F y) : fiber (trivial F) y
+   => ((y, x), rfl)
 
-\func decode->encode (B : \Type) (F : family B) (y : B) :
-  \Pi (x : F y) -> (encode B F y (decode B F y x)) = x
-  => \lam (x : F y)
-    => path (\lam i
-      => encode
-              B
-              F
-              ((decode B F y x).2 @ i)
-              (decode B F y x))
+\func decode->encode {B : \Type} (F : family B) {y : B}
+   (x : F y) : encode F (decode F x) = x
+   => rfl
 
-\func encode->decode (B : \Type) (F : family B) (y : B) :
-  \Pi (x : fiber (total B F) B (trivial B F) y)
-    -> (decode B F y (encode B F y x)) = x
-  => \lam (x : fiber (total B F) B (trivial B F) y)
-    => path (\lam i
-      => (((inv x.2) @ i,
-           (pathOverFamily (transport_twist F x.2 x.1.2)) @ i),
-          (pathOverFamily ((coe_path (inv x.2) rfl rfl)
-                      # (comp-assoc (inv (inv x.2)) rfl rfl)
-                         # (refl-right ((inv (inv x.2)) # rfl))
-                            # (refl-right (inv (inv x.2)))
-                               # (inv_inv x.2))) @ i))
-          \where
-            \func transport_twist {A : \Type} (B : A -> \Type)
-                                  {a b : A}
-                                  (p : a = b) (x : B a) :
-              transport B (inv p) (transport B p x) = x
-              => J (\lam z (p' : a = z)
-                => transport B (inv p') (transport B p' x) = x) rfl p
+\func encode->decode {B : \Type} (F : family B) {y : B}
+   (x : fiber (trivial F) y) : decode F (encode F x) = x
+   => path (\lam i
+      => ((inv x.2 @ i, pathOverFamily (transport-twist F x.2 x.1.2) @ i),
+          pathOverFamily
+             (coe-path (inv x.2) rfl rfl
+            # comp-assoc (inv (inv x.2)) rfl rfl
+            # refl-right (inv (inv x.2) # rfl)
+            # refl-right (inv (inv x.2))
+            # inv-inv x.2) @ i))
 
-\func hFiber=DependentTypeParameterized (B : \Type)
-                                        (F : family B)
-                                        (y : B) :
-  (fiber (total B F) B (trivial B F) y) = (F y)
-  => Iso=>Path
+\func hFiber=DependentTypeParameterized {B : \Type} (F : family B) (y : B) :
+   fiber (trivial F) y = F y
+   => Iso=>Path
       (\new Iso
-          (fiber (total B F) B (trivial B F) y)
-          (F y)
-          (encode B F y)
-          (decode B F y)
-          (encode->decode B F y)
-          (decode->encode B F y))
+         (fiber (trivial F) y) (F y)
+         (encode F) (decode F)
+         (encode->decode F) (decode->encode F))
 
-\func Fibration=DependentType (B : \Type) (F : family B) :
-  (fiber (total B F) B (trivial B F)) = F
-  => path (\lam i y
-    => (hFiber=DependentTypeParameterized B F y) @ i)
+\func Fibration=DependentType {B : \Type} (F : family B) : (fiber (trivial F)) = F
+   => funext-nondep (hFiber=DependentTypeParameterized F)

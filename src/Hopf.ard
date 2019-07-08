@@ -5,21 +5,15 @@
 \import S1
 \import Path
 \import Univ
+\import Susp
 
-\data susp (A : \Type)
-  | north
-  | south
-  | merid (a : A) (i : I) \elim i {
-    | left => north
-    | right => south
-  }
+\func S2 : \Type => Susp S1
 
-\func S2 : \Type => susp S1
+\func isContrSingl {A : \Type} (a : A) : isContr (singl A a)
+   => ((a, rfl), \lam z => contr z.2)
 
-\func isContrSingl (A : \Type) (a : A) : isContr (singl A a) => ((a, (refl a)), (\lam (z : singl A a) => contr A a z.1 z.2))
-
-\func idEquiv (A : \Type) : A <~> A => (\lam (x : A) => x, isContrSingl A)
+\func idEquiv (A : \Type) : A <~> A => (idfun, isContrSingl)
 
 \func Square {A : \Type} {a b c d : A}
              (u : a = b) (v : c = d) (p : a = c) (q : b = d)
-  => Path (\lam i => u @ i = v @ i) p q
+   => Path (\lam i => u @ i = v @ i) p q
