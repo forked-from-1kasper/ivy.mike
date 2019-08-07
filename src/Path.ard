@@ -132,9 +132,9 @@
 \func inv-J {A : \Type} {a b : A} (p : a = b) : b = a
    => J (\lam x _ => x = a) rfl p
 
-\func n-groupoid (A : \Type) (n : Nat) : \Type => \Pi (a b : A) -> rec a b n
-   \where \func rec {A : \Type} (a b : A) (k : Nat) : \Type
-   \elim k { | zero => a = b | suc n => n-groupoid (a = b) n }
+\func n-groupoid (A : \Type) (n : Nat) : \Type \elim n
+   | zero => \Pi (a b : A) -> a = b
+   | suc n => \Pi (a b : A) -> n-groupoid (a = b) n
 
 \func isContr     (A : \Type) : \Type => \Sigma (x : A) (\Pi (y : A) -> x = y)
 \func isProp      (A : \Type) : \Type => n-groupoid A 0
