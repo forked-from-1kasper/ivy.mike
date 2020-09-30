@@ -27,16 +27,13 @@
    (x : F y) : encode F (decode F x) = x
    => rfl
 
+\func encode->decode' {B : \Type} (F : family B) {y : B} (x : B) (f : F x) (p : trivial F (x, f) = y)
+    : decode F (encode F ((x, f), p)) = ((x, f), p)
+    | F, x, f, idp => idp
+
 \func encode->decode {B : \Type} (F : family B) {y : B}
    (x : fiber (trivial F) y) : decode F (encode F x) = x
-   => path (\lam i
-      => ((inv x.2 @ i, pathOverFamily (transport-twist F x.2 x.1.2) @ i),
-          pathOverFamily
-             (coe-path (inv x.2) rfl rfl
-            # comp-assoc (inv (inv x.2)) rfl rfl
-            # refl-right (inv (inv x.2) # rfl)
-            # refl-right (inv (inv x.2))
-            # inv-inv x.2) @ i))
+  => encode->decode' F x.1.1 x.1.2 x.2
 
 \func hFiber=DependentTypeParameterized {B : \Type} (F : family B) (y : B) :
    fiber (trivial F) y = F y
