@@ -21,12 +21,47 @@
 \func back-turn (x : base = base) : base = base
    => x # inv loopP
 
-\func helix (x : S1) : \Type \elim x
-   | base => Z
-   | loop i => suc-path-Z @ i
+\func code (x : S1) : \Set
+   | base => Int
+   | loop i => iso isuc ipred ipred_isuc isuc_ipred i
 
-\func winding (p : base = base) : Z
-   => transport helix p zero-Z
+\func encode (x : S1) (p : base = x) => transport code p 0
 
-\func loopZ1 : winding loopP = one-Z => rfl
-\func loopZ0 : winding triv = zero-Z => rfl
+\func wind (x : Int) : loopS1
+   | pos 0 => idp
+   | pos (suc n) => wind (pos n) # loopP
+   | Int.neg (suc n) => wind (Int.neg n) # inv loopP
+
+\func decode (x : S1) : code x -> base = x \elim x
+   | base => wind
+   | loop i => pathOverFamily (path (\lam j x => decode_loop x @ j)) @ i
+   \where {
+      \func wind_loop (n : Int) : wind n # loopP = wind (isuc n)
+         | pos _ => idp
+         | Int.neg (suc n) => inv (comp-assoc (wind (Int.neg n)) (inv loopP) loopP) # cong (wind (Int.neg n) #) (comp-inv-path loopP)
+
+      \func decode_loop (x : Int) =>
+         comp_pi code (base =) loopP wind x
+            # comp_path-right loopP (wind (transport code (inv loopP) x))
+            # cong (`# loopP) (cong wind (comp_inv_func code loopP ipred ipred_isuc x))
+            # wind_loop (ipred x)
+            # cong wind (isuc_ipred x)
+   }
+
+\func encode_decode {x : S1} (p : base = x) : decode x (encode x p) = p
+   | idp => idp
+
+\func encode_wind (x : Int) : encode base (wind x) = x
+   | pos (suc m) =>
+      comp_# code (wind (pos m)) loopP 0 # cong (transport code loopP) (encode_wind (pos m))
+   | pos zero => idp
+   | Int.neg (suc m) =>
+      comp_# code (wind (Int.neg m)) (inv loopP) 0
+         # cong (transport code (inv loopP)) (encode_wind (Int.neg m))
+         # comp_inv_func code loopP ipred ipred_isuc (Int.neg m)
+
+\func decode_encode (x : S1) (c : code x) : encode x (decode x c) = c \elim x
+   | base => encode_wind c
+
+\func Loop_S1 : loopS1 = Int =>
+   path (iso (encode base) wind encode_decode encode_wind)

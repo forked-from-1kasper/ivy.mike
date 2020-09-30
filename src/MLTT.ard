@@ -6,22 +6,22 @@
 \import Path
 
 \record MLTT
-   (A : \Type)
-   (Pi_Former : \Pi (A -> \Type) -> \Type)
-   (Pi_Intro : \Pi (B : A -> \Type) -> Pi A B -> Pi A B)
-   (Pi_Elim : \Pi (B : A -> \Type) -> Pi A B -> Pi A B)
-   (Pi_Comp1 : \Pi (B : A -> \Type)  (f : Pi A B) (a : A) -> Pi_Elim B (Pi_Intro B f) a = f a)
-   (Pi_Comp2 : \Pi (B : A -> \Type) (f : Pi A B) -> f = Pi_Intro B f)
-   (Sigma_Former : \Pi (A -> \Type) -> \Type)
-   (Sigma_Intro : \Pi (B : A -> \Type) (a : A) (b : B a) -> Sigma A B)
-   (Sigma_Elim1 : \Pi (B : A -> \Type) (x : Sigma A B) -> A)
-   (Sigma_Elim2 : \Pi (B : A -> \Type) (x : Sigma A B) -> B (pi1 A B x))
-   (Sigma_Comp1 : \Pi (B : A -> \Type) (a : A) (b : B a) -> a = (Sigma_Elim1 B (Sigma_Intro B a b)))
-   (Sigma_Comp2 : \Pi (B : A -> \Type) (a : A) (b : B a) -> b = (Sigma_Elim2 B (a,b)))
-   (Sigma_Comp3 : \Pi (B : A -> \Type) (p : Sigma A B) -> p = Sigma_Intro B (pi1 A B p) (Sigma_Elim2 B p))
-   (Id_Former : A -> A -> \Type)
-   (Id_Intro : \Pi (a : A) -> a = a)
-   (Id_Elim : \Pi (a : A) (C : \Pi (x : A) -> a = x -> \Type) (d : C a (refl a)) (x : A) (p : a = x) -> C x p)
+  | A : \Type
+  | Pi_Former : \Pi (A -> \Type) -> \Type
+  | Pi_Intro (B : A -> \Type) : Pi A B -> Pi A B
+  | Pi_Elim (B : A -> \Type) : Pi A B -> Pi A B
+  | Pi_Comp1 (B : A -> \Type) (f : Pi A B) (a : A) : Pi_Elim B (Pi_Intro B f) a = f a
+  | Pi_Comp2 (B : A -> \Type) (f : Pi A B) : f = Pi_Intro B f
+  | Sigma_Former (A -> \Type) : \Type
+  | Sigma_Intro (B : A -> \Type) (a : A) (b : B a) : Sigma A B
+  | Sigma_Elim1 (B : A -> \Type) (x : Sigma A B) : A
+  | Sigma_Elim2 (B : A -> \Type) (x : Sigma A B) : B (pi1 A B x)
+  | Sigma_Comp1 (B : A -> \Type) (a : A) : \Pi (b : B a) -> a = (Sigma_Elim1 B (Sigma_Intro B a b))
+  | Sigma_Comp2 (B : A -> \Type) (a : A) : \Pi (b : B a) -> b = (Sigma_Elim2 B (a,b))
+  | Sigma_Comp3 (B : A -> \Type) (p : Sigma A B) : p = Sigma_Intro B (pi1 A B p) (Sigma_Elim2 B p)
+  | Id_Former : A -> A -> \Type
+  | Id_Intro : \Pi (a : A) -> a = a
+  | Id_Elim : \Pi (a : A) (C : \Pi (x : A) -> a = x -> \Type) (d : C a (refl a)) (x : A) (p : a = x) -> C x p
 
 \func check (A : \Type) : MLTT
    => \new MLTT A (Pi A) (lam A) (app A) (beta A) (eta A)

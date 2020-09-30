@@ -5,10 +5,10 @@
    => coe2 A i x k
 
 \func refl {A : \Type} (a : A) : a = a
-   => path (\lam i => a)
+   => idp
 
 \func rfl {A : \Type} {a : A} : a = a
-   => path (\lam i => a)
+   => idp
 
 \func HConnAnd {A : \Type} {a b : A} (p : a = b) :
    Path (\lam i => a = p @ i) rfl p
@@ -16,7 +16,7 @@
 
 \func HConnOr {A : \Type} {a b : A} (p : a = b) :
    Path (\lam i => p @ i = b) p rfl
-   => path (connOr p)
+   | idp => idp
 
 \func trans {A B : \Type} (p : A = B) : A -> B
    => coercion left right (@ p)
@@ -35,14 +35,30 @@
    => trans p
 
 \func transport {A : \Type} (B : A -> \Type) {a b : A} (p : a = b) (x : B a) : B b
-   => coercion left right (\lam i => B (p @ i)) x
+   => coe (\lam i => B (p @ i)) x right
 
 \func transport-twist {A : \Type} (B : A -> \Type) {a b : A}
    (p : a = b) (x : B a) : transport B (inv p) (transport B p x) = x
-   => J (\lam z q => transport B (inv q) (transport B q x) = x) rfl p
+   | _, idp, x => idp
+
+\func comp_pi {A : \Type} (B C : A -> \Type) {a a' : A} (p : a = a') (f : B a -> C a) (x : B a')
+   : transport (\lam y => B y -> C y) p f x = transport C p (f (transport B (inv p) x)) \elim p
+   | idp => idp
+
+\func comp_path-right {A : \Type} {a0 a b : A} (p : a = b) (q : a0 = a)
+   : transport (a0 =) p q = q # p
+   | idp, idp => idp
+
+\func comp_inv_func {A : \Type} (B : A -> \Type) {a a' : A} (p : a = a') (g : B a' -> B a) (gf : \Pi (x : B a) -> g (transport B p x) = x) (b : B a')
+   : transport B (inv p) b = g b \elim p
+   | idp => inv (gf b)
+
+\func comp_# {A : \Type} (B : A -> \Type) {a a' a'' : A} (p : a = a') (q : a' = a'') (x : B a)
+   : transport B (p # q) x = transport B q (transport B p x) \elim q
+   | idp => idp
 
 \func subst {A : \Type} {B : A -> \Type} {a b : A} (p : a = b) (x : B a) : B b
-   => coercion left right (\lam i => B (p @ i)) x
+   | idp, x => x
 
 \func HPath {A B : \Type} (a : A) (b : B) (P : A = B) : \Type
    => trans P a = b
@@ -54,21 +70,20 @@
    => (a, refl a)
 
 \func inv {A : \Type} {a b : A} (p : a = b) : b = a
-   => coercion right left (\lam i => b = p @ i) rfl
+   | idp => idp
 
 \func seg : left = right => path idfun
 
 \func neg (i : I) : I => inv seg @ i
 
 \func \infixl 5 # {A : \Type} {a b c : A} (p : a = b) (q : b = c) : a = c
-   => concatOverFamily p q
-       \where
-          \func concatOverFamily {A : I -> \Type} {a : A left} {a' a'' : A right} (p : Path A a a') (q : a' = a'') : Path A a a'' =>
-             transport (Path A a) q p
+   | p, idp => p  \where
+   \func concatOverFamily {A : I -> \Type} {a : A left} {a' a'' : A right} (p : Path A a a') (q : a' = a'') : Path A a a'' =>
+      transport (Path A a) q p
 
 \func kan {A : \Type} {a b c d : A} (bottom : a = b)
    (left : a = c) (right : b = d) : c = d
-   => inv left # bottom # right
+   | idp, idp, idp => idp
 
 {-       u
     a ------> b
@@ -102,15 +117,14 @@
       rfl
 
 \func cong {A B : \Type} (f : A -> B) {a b : A} (p : a = b) : f a = f b
-   => path (\lam i => f (p @ i))
+   | _, idp => idp
 
 \func contr {A : \Type} {a b : A} (p : a = b) : theta A a = (b, p)
-   => path (\lam i => (p @ i, path (\lam j => p @ meet i j)))
+   | idp => idp
 
 \func coe-path {A : \Type} {a1 a2 a3 a4 : A} (p : a2 = a1) (q : a2 = a3) (r : a3 = a4)
    : coe (\lam i => p @ i = r @ i) q right = (inv p # (q # r))
-   => coe (\lam j => coe (\lam i => p @ i = r @ i) q j = (inv (connAnd p j) # (q # connAnd r j)))
-          (inv (refl-left q)) right
+   | idp, idp, idp => idp
 
 \func D (A : \Type) : \Type => \Pi (x y : A) -> x = y -> \Type
 
@@ -119,15 +133,12 @@
 -- => coe (\lam i => C (p @ i) (connAnd p i)) d right -- normal form
    => transport (\lam x => C x.1 x.2) (contr p) d
 
-\func inv-inv {A : \Type} {a a' : A} (p : a = a') : inv (inv p) = p =>
-   J (\lam _ p => inv (inv p) = p) rfl p
+\func inv-inv {A : \Type} {a a' : A} (p : a = a') : inv (inv p) = p
+   | idp => idp
 
 \func comp-assoc {A : \Type} {a b c d : A}
    (p : a = b) (q : b = c) (r : c = d) : p # (q # r) = (p # q) # r
-   => \let | enclose-left => refl-right (p # q)
-           | enclose-right => cong (# p) (refl-right q)
-      \in J (\lam _ r => p # (q # r) = (p # q) # r)
-            (enclose-right # inv enclose-left) r
+   | idp, idp, idp => idp
 
 \func inv-J {A : \Type} {a b : A} (p : a = b) : b = a
    => J (\lam x _ => x = a) rfl p
@@ -160,11 +171,13 @@
    homotopy (\lam _ => B) f g -> f = g
    => funext (\lam _ => B)
 
+{-
 \func I-ind (C : I -> \Type) {b0 : C left} {b1 : C right} (s : Path C b0 b1)
    (i : I) : C i \elim i
    | left => b0
    | right => b1
    | i => s @ i
+-}
 
 \func I-contr-left (x : I) : left = x
    => coercion left x (\lam x => left = x) rfl

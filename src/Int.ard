@@ -1,49 +1,24 @@
 
-\import Proto \import Path
+\import Proto \import Path \hiding (neg)
+\import S1
 
-\func Z : \Type => either Nat Nat
+\func isuc (x : Int) : Int
+  | pos n => pos (suc n)
+  | neg (suc n) => neg n
 
-{- +2 = inr (suc (suc zero))
-   +1 = inr (suc zero)
-    0 = inr zero
-   -1 = inl zero
-   -2 = inl (suc zero) -}
+\func ipred (x : Int) : Int
+  | pos 0 => neg 1
+  | pos (suc n) => pos n
+  | neg n => neg (suc n)
 
-\func minus-one-Z : Z => inl zero
-\func zero-Z : Z => inr zero
-\func one-Z : Z => inr (suc zero)
+\func ipred_isuc (x : Int) : ipred (isuc x) = x
+  | pos n => idp
+  | neg (suc n) => idp
 
-\func suc-Z (n : Z) : Z \elim n
-   | inl u => \case u \with {
-      | zero => inr zero
-      | suc n => inl n
-   }
-   | inr v => inr (suc v)
+\lemma isuc_ipred (x : Int) : isuc (ipred x) = x
+  | pos 0 => idp
+  | pos (suc n) => idp
+  | neg n => idp
 
-\func pred-Z (n : Z) : Z \elim n
-   | inl u => inl (suc u)
-   | inr v => \case v \with {
-      | zero => inl zero
-      | suc n => inr n
-   }
-
-\func suc-pred-inr-Z (u : Nat) : suc-Z (pred-Z (inr u)) = inr u \elim u
-   | zero => rfl
-   | suc n => rfl
-
-\func pred-suc-inl-Z (u : Nat) : pred-Z (suc-Z (inl u)) = inl u \elim u
-   | zero => rfl
-   | suc n => rfl
-
-\func suc-pred-Z (x : Z) : suc-Z (pred-Z x) = x \elim x
-   | inl u => rfl
-   | inr v => suc-pred-inr-Z v
-
-\func pred-suc-Z (x : Z) : pred-Z (suc-Z x) = x \elim x
-   | inl u => pred-suc-inl-Z u
-   | inr v => rfl
-
-\func suc-path-Z : Z = Z
-   => path (iso suc-Z pred-Z pred-suc-Z suc-pred-Z)
-
-\func test-one-Z : trans suc-path-Z zero-Z = inr (suc zero) => rfl
+\func suc-path-Z : Int = Int
+  => path (iso isuc ipred ipred_isuc isuc_ipred)
