@@ -2,25 +2,25 @@
 \import Proto \import Path \import Int
 
 \data R
-   | elem Z
-   | glue-step (x : Z) (i : I) \elim i {
+   | elem Int
+   | glue-step (x : Int) (i : I) \elim i {
       | left => elem x
-      | right => elem (suc-Z x)
+      | right => elem (isuc x)
    }
 
-\func R-step (x : Z) : elem x = elem (suc-Z x)
+\func R-step (x : Int) : elem x = elem (isuc x)
    => path (glue-step x)
 
-\func R-inr-elem-contr (x : Nat) : elem zero-Z = elem (inr x) \elim x
-   | 0 => rfl
-   | suc x => R-inr-elem-contr x # R-step (inr x)
+\func R-pos-elem-contr (x : Nat) : elem izero = elem (pos x) \elim x
+   | 0 => refl (elem izero)
+   | suc x => R-pos-elem-contr x # R-step (pos x)
 
-\func R-inl-elem-contr (x : Nat) : elem zero-Z = elem (inl x) \elim x
-   | 0 => inv (R-step minus-one-Z)
-   | suc x => R-inl-elem-contr x # inv (R-step (inl (suc x)))
+\func R-neg-elem-contr (x : Nat) : elem izero = elem (neg x) \elim x
+   | 0 => refl (elem izero)
+   | suc x => R-neg-elem-contr x # inv (R-step (neg (suc x)))
 
-\func R-elem-contr (x : Z) : elem zero-Z = elem x \elim x
-   | inr x => R-inr-elem-contr x
-   | inl x => R-inl-elem-contr x
+\func R-elem-contr (x : Int) : elem izero = elem x \elim x
+   | pos x => R-pos-elem-contr x
+   | neg x => R-neg-elem-contr x
 
 \func R2 => tuple R R

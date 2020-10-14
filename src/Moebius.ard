@@ -5,11 +5,11 @@
 \import Iso
 \import Univ
 
-\func neg-neg (x : I) : neg (neg x) = x
-   => inv (connAnd (inv seg) (neg x)) # I-contr-right x
+\func negate-negate (x : I) : negate (negate x) = x
+   => inv (connAnd (inv seg) (negate x)) # I-contr-right x
 
 \func twist : I = I => Iso=>Path
-   \new Iso I I neg neg neg-neg neg-neg
+   \new Iso I I negate negate negate-negate negate-negate
 
 \func M : \Pi (x : S1) -> \Type => \lam x => \case x \with {
    | base => I

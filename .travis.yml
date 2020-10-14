@@ -11,4 +11,4 @@ install:
   - cd ..
 
 script:
-  - java -jar ./Arend/build/libs/arend.jar -s src
+  - java -jar `find ./Arend -name cli-* | head -n 1` -s src
