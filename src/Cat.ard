@@ -9,17 +9,10 @@
   | right : \Pi {x y : carrier} (f : hom x y) -> c f (id y) = f
   | assoc : \Pi {x y z w : carrier} (f : hom x y) (g : hom y z) (h : hom z w) -> c (c f g) h = c f (c g h)
 
-\record Catgroupoid
-  | carrier : \Type
-  | hom : \Pi (x y : carrier) -> \Type
-  | id : \Pi (x : carrier) -> hom x x
-  | c : \Pi {x y z : carrier} -> hom x y -> hom y z -> hom x z
+\record Catgroupoid \extends Precategory
   | inv : \Pi {x y : carrier} -> hom x y -> hom y x
   | inv-left : \Pi {x y : carrier} (p : hom x y) -> c p (inv p) = id x
   | inv-right : \Pi {x y : carrier} (p : hom x y) -> c (inv p) p = id y
-  | left : \Pi {x y : carrier} (f : hom x y) -> c (id x) f = f
-  | right : \Pi (x y : carrier) (f : hom x y) -> c f (id y) = f
-  | assoc : \Pi {x y z w : carrier} (f : hom x y) (g : hom y z) (h : hom z w) -> c (c f g) h = c f (c g h)
 
 \record iso
   | C : Precategory
