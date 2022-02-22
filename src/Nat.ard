@@ -1,0 +1,5 @@
+\import Proto
+
+\func nat-eta (n : Nat) : either (n = 0) (\Sigma (m : Nat) (n = suc m)) \elim n
+  | zero  => inl idp
+  | suc n => inr (n, idp)
