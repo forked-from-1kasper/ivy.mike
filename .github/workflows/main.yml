@@ -1,0 +1,32 @@
+name: arend
+
+on:
+  - pull_request
+  - push
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Java
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+          cache: 'gradle'
+
+      - run: ./gradlew
+      - run: ./gradlew jarDep
+      - run: cd ..
+      - run: java -jar `find ./Arend -name cli-* | head -n 1` -s src
+
