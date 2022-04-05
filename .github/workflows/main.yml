@@ -19,17 +19,8 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Download Arend
-        run: git clone https://github.com/JetBrains/Arend && cd Arend
+        run: wget https://github.com/JetBrains/Arend/releases/latest/download/Arend.jar
 
-      - name: Setup Java
-        uses: actions/setup-java@v2
-        with:
-          distribution: 'temurin'
-          java-version: '11'
-          cache: 'gradle'
-
-      - run: ../gradlew
-      - run: ../gradlew jarDep
-      - run: cd ..
-      - run: java -jar `find ./Arend -name cli-* | head -n 1` -s src
+      - name: Check library
+        run: java -jar Arend.jar -s src
 
