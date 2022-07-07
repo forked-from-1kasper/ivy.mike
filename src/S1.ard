@@ -27,6 +27,8 @@
 
 \func encode (x : S1) (p : base = x) => transport code p 0
 
+\func winding => encode base
+
 \func wind (x : Int) : loopS1
    | pos 0 => idp
    | pos (suc n) => wind (pos n) # loopP
@@ -64,4 +66,4 @@
    | base => encode-wind c
 
 \func loop-S1 : loopS1 = Int =>
-   path (iso (encode base) wind encode-decode encode-wind)
+   path (iso winding wind encode-decode encode-wind)
